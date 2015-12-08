@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <script src="http://yandex.st/jquery/1.7.1/jquery.min.js"></script>
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src="http://cdn.jsdelivr.net/sockjs/0.3/sockjs.min.js"></script>
+  <script>
+    $(function() {
+        var map = L.map('map').setView([30.2743309,-97.7193542], 13);
+        L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            }).addTo(map);
+        var bus_layer = L.geoJson().addTo(map);
+        var conn = new SockJS('http://localhost:9999/statsconn');
+        conn.onmessage = function(e) {
+          webdata = JSON.parse(e.data);
+          bus_layer.clearLayers();
+          bus_layer.addData(webdata.geodata);
+          $("#busnum").html(webdata.busnum);
+          $("#cusnum").html(webdata.cusnum);
+          console.log(webdata);
+        }
+    });
+</script>
+</head>
+<body>
+  <h3>Buses</h3>
+  <div>There are <span id="busnum">0</span> on the road</div>
+  <div>There are <span id="cusnum">0</span> looking at this site</div>
+
+    <div id="map" style="width:100%;height:600px;"></div>
+
+</body>
+</html>
